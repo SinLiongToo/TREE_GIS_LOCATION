@@ -1,0 +1,8 @@
+name = "tree-gis-location"
+compatibility_date = "2024-09-23"
+
+# Cloudflare Static Assets configuration
+[assets]
+directory = "."
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"

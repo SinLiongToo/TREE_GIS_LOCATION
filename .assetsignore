@@ -1,0 +1,10 @@
+.git/
+.gitignore
+.nojekyll
+__pycache__/
+*.py
+*.pyc
+*.bin
+scripts/
+data/raw/
+docs/
