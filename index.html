@@ -139,6 +139,13 @@
         <span class="hidden md:inline">尋找附近老樹</span>
       </button>
 
+      <!-- Pruning Manuals Button -->
+      <button id="btn-pruning" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-scissors text-amber-400"></i>
+        <span class="hidden md:inline">樹木修剪手冊規範</span>
+        <span class="md:hidden">修剪手冊</span>
+      </button>
+
       <!-- Workflow & Lineage Modal Button -->
       <button id="btn-info" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-circle-nodes text-emerald-400"></i>
@@ -289,6 +296,20 @@
           <div class="font-mono font-bold text-emerald-400 text-sm" id="filtered-count">11,428 筆</div>
         </div>
 
+        <!-- PRUNING GUIDE CARD LINK -->
+        <div id="sidebar-pruning-link" class="p-2.5 bg-slate-950/90 rounded-xl border border-amber-500/30 hover:border-amber-500/60 transition cursor-pointer group">
+          <div class="flex items-center justify-between text-amber-400 font-bold text-xs mb-1">
+            <span class="flex items-center space-x-1.5">
+              <i class="fa-solid fa-scissors"></i>
+              <span>樹木修剪作業手冊規範</span>
+            </span>
+            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition"></i>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-snug">
+            查閱全臺各縣市（臺北、新北、高雄、臺南）與中央上位之景觀樹木修剪作業規範與技術手冊 PDF。
+          </p>
+        </div>
+
         <!-- TOP TREES LIST VIEW OF FILTERED RESULTS -->
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -390,22 +411,181 @@
 
   </div>
 
-  <!-- WORKFLOW & LEGAL DATA LINEAGE MODAL -->
-  <div id="modal-info" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+  <!-- KNOWLEDGE BASE, PRUNING MANUALS & LEGAL DATA LINEAGE MODAL -->
+  <div id="modal-info" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full p-6 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2.5">
           <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
             <i class="fa-solid fa-book-bookmark"></i>
           </div>
-          <h3 class="text-base font-bold text-white">臺灣受保護樹木資料管線與法源架構</h3>
+          <div>
+            <h3 class="text-base font-bold text-white">臺灣樹木保護知識庫、法源與修剪技術手冊</h3>
+            <p class="text-[11px] text-slate-400">森林法法源・中央上位指引・地方縣市修剪作業規範・管線權責架構</p>
+          </div>
         </div>
-        <button id="close-modal" class="text-slate-400 hover:text-white">
+        <button id="close-modal" class="text-slate-400 hover:text-white transition">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+      <!-- MODAL TABS -->
+      <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 text-xs overflow-x-auto">
+        <button id="tab-btn-pruning" class="modal-tab-btn active px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/50 flex items-center space-x-1.5 shrink-0 transition" data-target="tab-content-pruning">
+          <i class="fa-solid fa-scissors text-amber-400"></i>
+          <span>全國樹木修剪作業手冊及規範 (PDF)</span>
+        </button>
+        <button id="tab-btn-legal" class="modal-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 flex items-center space-x-1.5 shrink-0 transition" data-target="tab-content-legal">
+          <i class="fa-solid fa-scale-balanced text-emerald-400"></i>
+          <span>法規依據與列管標準</span>
+        </button>
+        <button id="tab-btn-pipeline" class="modal-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 flex items-center space-x-1.5 shrink-0 transition" data-target="tab-content-pipeline">
+          <i class="fa-solid fa-circle-nodes text-sky-400"></i>
+          <span>資料管線與來源清單</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: PRUNING MANUALS & SPECIFICATIONS (全國各地方樹木修剪手冊及規範) -->
+      <div id="tab-content-pruning" class="modal-tab-panel space-y-4 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3 bg-slate-950/70 border border-amber-500/30 rounded-xl flex items-start space-x-2.5">
+          <div class="text-amber-400 text-base mt-0.5"><i class="fa-solid fa-circle-info"></i></div>
+          <div class="space-y-1">
+            <h4 class="font-bold text-amber-300 text-xs">台灣各地方政府樹木修剪作業規範與技術手冊</h4>
+            <p class="text-[11px] text-slate-300">
+              各地方政府（工務局、農業局、公園處）針對樹木修剪均有出版編制嚴謹、含大量彩色圖解與「正確切口 vs. 錯誤留樁/撕裂」對照的技術手冊與作業規範 PDF。點擊各手冊專屬按鈕可直達主管機關頁面或一鍵檢索 PDF 下載：
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. 跨地方通用的中央基準文件 -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px] uppercase">中央基準母法</span>
+              <h4 class="font-bold text-white text-sm">跨地方通用的中央基準文件（上位母法與技術源頭）</h4>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <a href="https://www.google.com/search?q=農業部林業及自然保育署+景觀樹木修剪作業指引+filetype:pdf" target="_blank" rel="noopener" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-medium flex items-center space-x-1 transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>Google 檢索 PDF</span>
+              </a>
+              <a href="https://www.forest.gov.tw/" target="_blank" rel="noopener" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] border border-slate-700 flex items-center space-x-1 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>主管署官網</span>
+              </a>
+            </div>
+          </div>
+          <p class="text-slate-400 text-[11px]">最權威的判定基準與各縣市手冊之技術源頭，明定修剪施工計畫書規範、各類樹冠修剪態樣與不良枝判定：</p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-300 text-[11px]">
+            <li><strong>農業部林業及自然保育署</strong>：《景觀樹木修剪作業指引》</li>
+            <li><strong>農業部林業試驗所</strong>：《景觀樹木修剪作業規範綱要》</li>
+            <li><strong>內政部國土管理署</strong>：公共工程施工綱要規範《第 02902 章 植栽養護》</li>
+          </ul>
+        </div>
+
+        <!-- 1. 臺北市政府工務局公園路燈工程管理處 -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2.5 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold text-[10px]">臺北市</span>
+              <h4 class="font-bold text-white text-sm">臺北市政府工務局公園路燈工程管理處</h4>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <a href="https://www.google.com/search?q=臺北市+樹木修剪作業手冊+filetype:pdf" target="_blank" rel="noopener" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-medium flex items-center space-x-1 transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>檢索手冊 PDF</span>
+              </a>
+              <a href="https://pkl.gov.taipei/" target="_blank" rel="noopener" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] border border-slate-700 flex items-center space-x-1 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>公園處官網</span>
+              </a>
+            </div>
+          </div>
+          <div class="text-[11px] space-y-1 text-slate-300">
+            <p><strong>手冊名稱</strong>：《樹木修剪作業規範》／《景觀樹木修剪作業手冊》</p>
+            <p><strong>內容特點</strong>：全台最早推動修剪證照與詳細規範的單位之一。內容完整收錄枝領判定、不良枝修剪標準、不同樹種修剪期程表及常見公安危害態樣。</p>
+            <p class="text-slate-400"><strong>檢索途徑</strong>：前往「臺北市政府工務局公園路燈工程管理處」官網 $\rightarrow$ 「業務資訊」/「便民服務」$\rightarrow$ 「檔案下載」</p>
+          </div>
+        </div>
+
+        <!-- 2. 新北市政府景觀處（農業局） -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2.5 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-400 font-bold text-[10px]">新北市</span>
+              <h4 class="font-bold text-white text-sm">新北市政府綠美化環境景觀處（農業局）</h4>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <a href="https://www.google.com/search?q=新北市樹木修剪技術手冊+filetype:pdf" target="_blank" rel="noopener" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-medium flex items-center space-x-1 transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>檢索技術手冊 PDF</span>
+              </a>
+              <a href="https://www.landscaping.ntpc.gov.tw/" target="_blank" rel="noopener" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] border border-slate-700 flex items-center space-x-1 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>景觀處官網</span>
+              </a>
+            </div>
+          </div>
+          <div class="text-[11px] space-y-1 text-slate-300">
+            <p><strong>手冊名稱</strong>：《新北市樹木修剪技術手冊》／《樹木維護修剪作業方式及技術要領》</p>
+            <p><strong>內容特點</strong>：圖解與案例分析非常直觀，詳細列舉「正確切口 vs. 錯誤留樁/撕裂」的實景照片，並包含灌木、綠籬與喬木的分級管理標準。</p>
+            <p class="text-slate-400"><strong>檢索途徑</strong>：前往「新北市政府綠美化環境景觀處」官網 $\rightarrow$ 「綠美化業務」$\rightarrow$ 「樹木保護與修剪規範」</p>
+          </div>
+        </div>
+
+        <!-- 3. 高雄市政府工務局公園處 -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2.5 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 font-bold text-[10px]">高雄市</span>
+              <h4 class="font-bold text-white text-sm">高雄市政府工務局公園處</h4>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <a href="https://www.google.com/search?q=高雄市+樹木修剪作業手冊+filetype:pdf" target="_blank" rel="noopener" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-medium flex items-center space-x-1 transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>檢索作業手冊 PDF</span>
+              </a>
+              <a href="https://pwb.kcg.gov.tw/" target="_blank" rel="noopener" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] border border-slate-700 flex items-center space-x-1 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>工務局官網</span>
+              </a>
+            </div>
+          </div>
+          <div class="text-[11px] space-y-1 text-slate-300">
+            <p><strong>手冊名稱</strong>：《高雄市樹木修剪作業手冊及規範》／《高雄市景觀樹木修剪作業規範》</p>
+            <p><strong>內容特點</strong>：針對南台灣氣候、防颱疏伐作業、常綠闊葉樹耐風力調整有詳細章節，著重於抗風修剪與降低強風折枝的平衡點。</p>
+            <p class="text-slate-400"><strong>檢索途徑</strong>：前往「高雄市政府工務局公園處」官網 $\rightarrow$ 「法規技術資訊」$\rightarrow$ 「修剪標準規範」</p>
+          </div>
+        </div>
+
+        <!-- 4. 臺南市政府工務局 -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2.5 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 font-bold text-[10px]">臺南市</span>
+              <h4 class="font-bold text-white text-sm">臺南市政府工務局</h4>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <a href="https://www.google.com/search?q=臺南市+行道樹修剪+作業指引+filetype:pdf" target="_blank" rel="noopener" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-medium flex items-center space-x-1 transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>檢索指引 PDF</span>
+              </a>
+              <a href="https://publicworks.tainan.gov.tw/" target="_blank" rel="noopener" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] border border-slate-700 flex items-center space-x-1 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>工務局官網</span>
+              </a>
+            </div>
+          </div>
+          <div class="text-[11px] space-y-1 text-slate-300">
+            <p><strong>手冊名稱</strong>：《臺南市行道樹修剪作業指引》／《樹木修剪作業技術規範》／《臺南市景觀樹木修剪要點》</p>
+            <p><strong>內容特點</strong>：結合在地古蹟周邊樹木保護與一般行道樹疏剪要求，明訂三刀法操作細節與單次去葉量限制（單次不得超過冠幅 1/3）。</p>
+            <p class="text-slate-400"><strong>檢索途徑</strong>：前往「臺南市政府工務局」官網 $\rightarrow$ 「便民服務」$\rightarrow$ 「文件下載」</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: LEGAL BASIS (法規依據與標準) -->
+      <div id="tab-content-legal" class="modal-tab-panel hidden space-y-4 text-xs text-slate-300 leading-relaxed">
         <div>
           <h4 class="font-bold text-emerald-400 text-sm mb-1.5">一、 法規依據與列管標準</h4>
           <p>依據《森林法》第五章之一「樹木保護專章」（第38條之2至第38條之6）以及中央訂定之《森林以外之樹木普查方法及受保護樹木認定標準》，地方主管機關每 5 年應辦理一次樹木普查。受保護樹木認定標準包含：</p>
@@ -415,9 +595,12 @@
             <li><strong>特殊意義</strong>：珍稀、具生態重要性、具地方人文歷史、文化代表性或居民記憶。</li>
           </ul>
         </div>
+      </div>
 
+      <!-- TAB 3: DATA PIPELINE (資料管線與來源清單) -->
+      <div id="tab-content-pipeline" class="modal-tab-panel hidden space-y-4 text-xs text-slate-300 leading-relaxed">
         <div>
-          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">二、 自動化資料管線 (Data Pipeline Workflow)</h4>
+          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">一、 自動化資料管線 (Data Pipeline Workflow)</h4>
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] space-y-1 text-slate-400">
             <p><span class="text-emerald-400">Step 1 [Fetch]</span> 批次抓取全國林試所 API、臺北市/桃園市/嘉義縣 Open Data 及花蓮縣官方公報 PDF</p>
             <p><span class="text-amber-400">Step 2 [Extract]</span> 使用 PyMuPDF (fitz) 自動將花蓮公報 20 頁表格提取轉換為 Markdown (.md) 與結構化 JSON</p>
@@ -427,7 +610,7 @@
         </div>
 
         <div>
-          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">三、 權責來源清單 (Ground Truth Sources)</h4>
+          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">二、 權責來源清單 (Ground Truth Sources)</h4>
           <div class="border border-slate-800 rounded-xl overflow-hidden">
             <table class="w-full text-left text-[11px]">
               <thead class="bg-slate-800 text-slate-300">
@@ -479,6 +662,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- BOOK "CHHIAU-CHHŌE樹王公" INTRO MODAL -->
@@ -997,9 +1181,49 @@
         }
       });
 
-      // Info Modal
+      // Info Modal & Pruning Tabs
       const modal = document.getElementById('modal-info');
-      document.getElementById('btn-info').addEventListener('click', () => modal.classList.remove('hidden'));
+      function switchInfoModalTab(targetPanelId) {
+        document.querySelectorAll('.modal-tab-btn').forEach(b => {
+          if (b.dataset.target === targetPanelId) {
+            b.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700');
+            b.classList.add('active', 'bg-emerald-500/20', 'text-emerald-300', 'font-bold', 'border-emerald-500/50');
+          } else {
+            b.classList.remove('active', 'bg-emerald-500/20', 'text-emerald-300', 'font-bold', 'border-emerald-500/50');
+            b.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
+          }
+        });
+        document.querySelectorAll('.modal-tab-panel').forEach(p => {
+          if (p.id === targetPanelId) {
+            p.classList.remove('hidden');
+          } else {
+            p.classList.add('hidden');
+          }
+        });
+      }
+
+      document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchInfoModalTab(btn.dataset.target));
+      });
+
+      document.getElementById('btn-info').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        switchInfoModalTab('tab-content-legal');
+      });
+
+      document.getElementById('btn-pruning').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        switchInfoModalTab('tab-content-pruning');
+      });
+
+      const sidebarPruningLink = document.getElementById('sidebar-pruning-link');
+      if (sidebarPruningLink) {
+        sidebarPruningLink.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+          switchInfoModalTab('tab-content-pruning');
+        });
+      }
+
       document.getElementById('close-modal').addEventListener('click', () => modal.classList.add('hidden'));
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
 
