@@ -1,0 +1,22 @@
+# Project Memory: 臺灣受保護樹木與珍貴老樹 GIS (TREE_GIS_LOCATION)
+
+## 一、 核心事實 (Durable Facts)
+1. **法源依據**：臺灣樹木保護核心法規為《森林法》第38條之2至第38條之6「樹木保護專章」以及中央農委會（現農業部）《森林以外之樹木普查方法及受保護樹木認定標準》；地方政府自治法規包含《臺北市樹木保護自治條例》、《高雄市特定紀念樹木保護自治條例》、《新北市珍貴樹木保護措施》等。
+2. **全國整合性資料集**：農業部林業試驗所建立的「老樹報報」（全國城鄉老樹資源調查資料庫，`https://map.oldtree.life/api/Tree/trees`）收錄全臺 22 縣市達 10,461 筆老樹，為目前涵蓋面最廣的真實基準資料庫。
+3. **地方縣市開放資料差異**：
+   - 臺北市文化局（`data.taipei`）提供全臺最完備的受保護樹木開放資料，共 3,874 筆（含經緯度與樹胸徑）。
+   - 桃園市農業局提供 595 筆（含 GPS 坐標與胸徑）。
+   - 嘉義縣政府提供 92 筆，但坐標為 TWD97（二度分帶 TM2 投影），檔案編碼為 Big5。
+   - 花蓮縣政府等以 20 頁官方公報 PDF 形式發布，含 TWD97 坐標（x:312659, y:2653235 等）。
+4. **坐標轉換**：TWD97 TM2 zone 121 (EPSG:3826) 透過高斯克呂格反算可精確無損轉換為 WGS84 (EPSG:4326)。
+5. **資料庫去重與增強**：空間距離在 25 公尺以內且縣市相同的樹木進行多源交叉比對與合併，保留雙重來源憑證。
+
+## 二、 決策紀錄 (Decisions)
+1. **PDF 提取策略**：使用 PyMuPDF (`fitz.open().find_tables()`) 進行向量表格抽取，結構化轉為 Markdown (`data/extracted_md/hualien_protected_trees.md`) 及 JSON。
+2. **Zero-CORS 離線架構**：為避免使用者直接雙擊 `index.html`（`file:///` 協議）時被瀏覽器阻擋本地 JSON fetch，特別在 Step 4 生成 `data/processed/taiwan_protected_trees_data.js`，將圖資掛載至 `window.TAIWAN_TREES_GEOJSON`，實現免伺服器離線秒開。
+3. **圖資圖層**：預設載入 Esri World Dark Gray Canvas（免 API Key、零浮水印）搭配內政部國土測繪中心 (NLSC) 臺灣通用電子地圖與正射影像圖、以及 OpenStreetMap。
+
+## 三、 常見地雷與注意事項 (Gotchas)
+1. **Windows 控制台編碼**：PowerShell 預設為 CP950，Python 腳本內必須加入 `sys.stdout.reconfigure(encoding='utf-8')`，以防 Unicode 符號（如 Checkmark）引發 `UnicodeEncodeError`。
+2. **政府網站 SSL 限制**：部分地方政府網站（如嘉義縣）使用的 SSL 密鑰長度較短，直接使用 Python 內建 urllib 會報 `[SSL: DH_KEY_TOO_SMALL]`，因此在腳本中建立了自動調用 `curl.exe -k -sL` 的容錯回退機制。
+3. **CartoDB 圖資 API Key 限制與浮水印**：CartoDB 自 2024 年底起針對未帶 API Key 的 `basemaps.cartocdn.com` 請求加上全螢幕斜向「API KEY REQUIRED carto.com/basemaps/apikey」浮水印。WebGIS 解決方案為改採 Esri World Dark Gray Canvas（Base + Reference）作為深色底圖，穩定、免 API Key 且支援高縮放比。

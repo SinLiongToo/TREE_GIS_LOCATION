@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-10-28T20:31:09.943410",
+  "sources": [
+    {
+      "id": "national_oldtree_life",
+      "title": "全國城鄉老樹資源調查資料庫 (老樹報報)",
+      "agency": "農業部林業試驗所 / 國立中興大學",
+      "format": "JSON",
+      "url": "https://map.oldtree.life/api/Tree/trees",
+      "dest_file": "oldtree_national.json",
+      "license": "政府資料開放授權條款 / 農業部林試所科技計畫公開資料",
+      "description": "涵蓋全台灣 22 縣市之列管受保護樹木、珍貴老樹與民間踏查老樹，包含 GPS 座標、樹齡、樹高、胸圍、樹籍沿革與原始管理機關。",
+      "status": "ok_existing",
+      "bytes": 7575652,
+      "path": "C:\\Users\\tu-hs\\OneDrive\\文件\\2022_0308_MASA\\2022-0708\\Projects_antigravity\\TREE_GIS_LOCATION\\data\\raw\\oldtree_national.json",
+      "updated_at": "2026-10-28T20:31:09.942114"
+    },
+    {
+      "id": "taipei_cultural_bureau",
+      "title": "臺北市受保護樹木",
+      "agency": "臺北市政府文化局",
+      "format": "CSV",
+      "url": "https://data.taipei/api/dataset/d9d1140b-c2c3-405f-8dd1-7b87b00f6f53/resource/a7c2db0d-8b6e-42b2-bdcc-ae69a6797e1d/download",
+      "dest_file": "taipei_protected_trees.csv",
+      "license": "政府資料開放授權條款第1版",
+      "description": "依據《臺北市樹木保護自治條例》列管之受保護樹木清單，包含編號、樹種、學名、胸徑、胸圍、地址與 GPS 經緯度座標。",
+      "status": "ok_existing",
+      "bytes": 784519,
+      "path": "C:\\Users\\tu-hs\\OneDrive\\文件\\2022_0308_MASA\\2022-0708\\Projects_antigravity\\TREE_GIS_LOCATION\\data\\raw\\taipei_protected_trees.csv",
+      "updated_at": "2026-10-28T20:31:09.942114"
+    },
+    {
+      "id": "taoyuan_agri_bureau",
+      "title": "桃園市受保護樹木資料",
+      "agency": "桃園市政府農業局",
+      "format": "CSV",
+      "url": "https://opendata.tycg.gov.tw/api/dataset/25bbcd34-16a8-4c4e-a341-4666cd0db5b4/resource/64ead2ac-24d0-48b5-8c4d-8ea4deec0baf/download",
+      "dest_file": "taoyuan_protected_trees.csv",
+      "license": "政府資料開放授權條款第1版",
+      "description": "依據《森林法》樹木保護專章列管受保護樹木，包含樹木編號、樹種、區域、地址、GPS 座標、樹高與胸高直徑。",
+      "status": "ok_existing",
+      "bytes": 58499,
+      "path": "C:\\Users\\tu-hs\\OneDrive\\文件\\2022_0308_MASA\\2022-0708\\Projects_antigravity\\TREE_GIS_LOCATION\\data\\raw\\taoyuan_protected_trees.csv",
+      "updated_at": "2026-10-28T20:31:09.942114"
+    },
+    {
+      "id": "chiayi_county_gov",
+      "title": "嘉義縣受保護樹木",
+      "agency": "嘉義縣政府農業處",
+      "format": "CSV",
+      "url": "https://ws-tm.cyhg.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvMTM0OS9yZWxmaWxlLzEyNTY1LzIwNTQ0OC83NjExMjViNy02MzQzLTQ4YmUtYTQzZS0wZTk2N2ZkYzNjMDkuY3N2&n=6ICB5qi56LOH5paZLTEuY3N2",
+      "dest_file": "chiayi_protected_trees.csv",
+      "license": "政府資料開放授權條款第1版",
+      "description": "嘉義縣轄內公告受保護樹木清單，含轄內編號、樹種中名、TWD97 座標、樹高、胸圍、鄉鎮與地址。",
+      "status": "ok_existing",
+      "bytes": 7775,
+      "path": "C:\\Users\\tu-hs\\OneDrive\\文件\\2022_0308_MASA\\2022-0708\\Projects_antigravity\\TREE_GIS_LOCATION\\data\\raw\\chiayi_protected_trees.csv",
+      "updated_at": "2026-10-28T20:31:09.942114"
+    },
+    {
+      "id": "hualien_county_pdf",
+      "title": "花蓮縣轄區受保護樹木列冊清冊",
+      "agency": "花蓮縣政府農業處",
+      "format": "PDF",
+      "url": "https://ws.hl.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvNDIyL3JlbGZpbGUvOTg1NS83MDQxMy9lMTVlZGM2ZS1kNDExLTRhZTktYmViNC1lNjg3OTUyNzJlZmUucGRm&n=6Iqx6JOu57ij6L2E5Y2A5Y%2BX5L%2Bd6K235qi55pyo5YiX5YaK5riF5ZauLnBkZg%3D%3D",
+      "dest_file": "hualien_protected_trees.pdf",
+      "license": "花蓮縣政府公報公開文件",
+      "description": "花蓮縣政府依森林法第38條之2公告之轄區受保護樹木造冊清冊，共20頁表格，含編號、樹種、樹齡、胸圍、胸徑、地號與土地所有權人。",
+      "status": "ok_existing",
+      "bytes": 305073,
+      "path": "C:\\Users\\tu-hs\\OneDrive\\文件\\2022_0308_MASA\\2022-0708\\Projects_antigravity\\TREE_GIS_LOCATION\\data\\raw\\hualien_protected_trees.pdf",
+      "updated_at": "2026-10-28T20:31:09.942114"
+    }
+  ]
+}

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>臺灣受保護樹木與珍貴老樹 WebGIS 全國地理資訊系統</title>
+  <meta name="description" content="依據《森林法》與各縣市樹木保護自治法規，整合全台超過萬筆列管受保護樹木、珍貴老樹之互動式地理資訊地圖。">
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Leaflet MarkerCluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b', 950: '#022c22'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    * { font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    #map { height: 100%; width: 100%; z-index: 10; }
+    
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.6); }
+
+    /* MarkerCluster Theme customization */
+    .marker-cluster-small { background-color: rgba(16, 185, 129, 0.4); }
+    .marker-cluster-small div { background-color: rgba(5, 150, 105, 0.85); color: white; font-weight: 700; }
+    .marker-cluster-medium { background-color: rgba(245, 158, 11, 0.4); }
+    .marker-cluster-medium div { background-color: rgba(217, 119, 6, 0.85); color: white; font-weight: 700; }
+    .marker-cluster-large { background-color: rgba(239, 68, 68, 0.4); }
+    .marker-cluster-large div { background-color: rgba(220, 38, 38, 0.85); color: white; font-weight: 700; }
+  </style>
+
+  <!-- Load zero-CORS offline data bundle directly -->
+  <script src="data/processed/taiwan_protected_trees_data.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col h-screen w-screen overflow-hidden select-none">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="h-14 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-4 z-30 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white text-lg">
+        <i class="fa-solid fa-tree"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-base font-bold text-white tracking-wide">臺灣受保護樹木與珍貴老樹 WebGIS</h1>
+          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold uppercase tracking-wider">全國整合版</span>
+        </div>
+        <p class="text-[11px] text-slate-400 hidden sm:block">依據《森林法》第38條之2樹木保護專章與各縣市受保護樹木自治法規</p>
+      </div>
+    </div>
+
+    <!-- STATS COUNTERS -->
+    <div class="hidden lg:flex items-center space-x-4 bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-700/50 text-xs">
+      <div class="flex items-center space-x-1.5">
+        <span class="text-emerald-400"><i class="fa-solid fa-leaf"></i></span>
+        <span class="text-slate-400">總列管樹木:</span>
+        <span class="font-bold font-mono text-white" id="stat-total">11,428</span>
+      </div>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-amber-400"><i class="fa-solid fa-hourglass-half"></i></span>
+        <span class="text-slate-400">百年名木:</span>
+        <span class="font-bold font-mono text-white" id="stat-century">1,362</span>
+      </div>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-cyan-400"><i class="fa-solid fa-map-location-dot"></i></span>
+        <span class="text-slate-400">涵蓋縣市:</span>
+        <span class="font-bold font-mono text-white">22 縣市</span>
+      </div>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-indigo-400"><i class="fa-solid fa-camera"></i></span>
+        <span class="text-slate-400">實地影像:</span>
+        <span class="font-bold font-mono text-white">784 筆</span>
+      </div>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <div class="flex items-center space-x-1.5" title="造訪累計人次 (Visitor Counter)">
+        <span class="text-rose-400"><i class="fa-solid fa-eye"></i></span>
+        <span class="text-slate-400">訪客:</span>
+        <img src="https://komarev.com/ghpvc/?username=SinLiongToo-TREE-GIS-LOCATION&label=&color=10b981&style=flat-square" alt="Visitors" class="h-4.5 rounded shadow-sm inline-block">
+      </div>
+    </div>
+
+    <!-- HEADER ACTION BUTTONS -->
+    <div class="flex items-center space-x-2">
+      <!-- Locate Nearest Tree Button -->
+      <button id="btn-gps" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-crosshairs text-sky-400"></i>
+        <span class="hidden md:inline">尋找附近老樹</span>
+      </button>
+
+      <!-- Workflow & Lineage Modal Button -->
+      <button id="btn-info" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-circle-nodes text-emerald-400"></i>
+        <span class="hidden md:inline">資料管線與法源</span>
+      </button>
+
+      <!-- Export Data Button -->
+      <div class="relative group">
+        <button id="btn-export" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs rounded-lg shadow-sm flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-download"></i>
+          <span>匯出資料</span>
+        </button>
+        <div class="absolute right-0 top-full mt-1.5 w-44 bg-slate-800 border border-slate-700 rounded-xl shadow-xl hidden group-hover:block z-50 p-1 text-xs">
+          <button id="export-geojson" class="w-full text-left px-3 py-2 hover:bg-slate-700 rounded-lg text-slate-200 flex items-center space-x-2">
+            <i class="fa-solid fa-layer-group text-emerald-400"></i>
+            <span>匯出 GeoJSON (GIS)</span>
+          </button>
+          <button id="export-csv" class="w-full text-left px-3 py-2 hover:bg-slate-700 rounded-lg text-slate-200 flex items-center space-x-2">
+            <i class="fa-solid fa-file-csv text-blue-400"></i>
+            <span>匯出 CSV 試算表</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN INTERFACE BODY (MAP + FILTER SIDEBAR + DETAIL DOSSIER) -->
+  <div class="flex flex-1 relative overflow-hidden">
+    
+    <!-- LEFT SIDEBAR: FILTERS & DATA EXPLORER -->
+    <aside id="sidebar" class="w-80 md:w-88 bg-slate-900/95 backdrop-blur-md border-r border-slate-800 flex flex-col z-20 transition-all duration-300 absolute md:static top-0 bottom-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+      
+      <!-- FILTER HEADER -->
+      <div class="p-3.5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-sliders text-emerald-400 text-sm"></i>
+          <h2 class="text-sm font-bold text-white">空間與屬性篩選</h2>
+        </div>
+        <button id="btn-reset-filters" class="text-xs text-slate-400 hover:text-emerald-400 flex items-center space-x-1 transition">
+          <i class="fa-solid fa-rotate-left text-[10px]"></i>
+          <span>重置條件</span>
+        </button>
+      </div>
+
+      <!-- FILTER CONTROLS (SCROLLABLE) -->
+      <div class="p-3.5 space-y-3.5 overflow-y-auto flex-1 text-xs">
+        
+        <!-- Keyword Search -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">關鍵字搜尋 (樹種 / 地址 / 地標 / 編號)</label>
+          <div class="relative">
+            <input type="text" id="filter-keyword" placeholder="輸入如：榕樹、孔廟、青年公園..." class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 pl-8 text-xs text-slate-100 placeholder-slate-500 outline-none transition" />
+            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-500 text-xs"></i>
+            <button id="clear-keyword" class="absolute right-2.5 top-2 text-slate-500 hover:text-slate-300 hidden">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- County / City Selector -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">主管縣市</label>
+          <select id="filter-county" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-xs text-slate-200 outline-none transition">
+            <option value="">全臺所有縣市 (全部 22 縣市)</option>
+            <option value="臺北市">臺北市 (4,027 筆)</option>
+            <option value="新北市">新北市 (1,066 筆)</option>
+            <option value="臺中市">臺中市 (809 筆)</option>
+            <option value="高雄市">高雄市 (700 筆)</option>
+            <option value="彰化縣">彰化縣 (607 筆)</option>
+            <option value="桃園市">桃園市 (530 筆)</option>
+            <option value="臺南市">臺南市 (519 筆)</option>
+            <option value="苗栗縣">苗栗縣 (365 筆)</option>
+            <option value="南投縣">南投縣 (339 筆)</option>
+            <option value="宜蘭縣">宜蘭縣 (327 筆)</option>
+            <option value="花蓮縣">花蓮縣 (248 筆)</option>
+            <option value="嘉義縣">嘉義縣 (276 筆)</option>
+            <option value="雲林縣">雲林縣 (242 筆)</option>
+            <option value="屏東縣">屏東縣 (194 筆)</option>
+            <option value="臺東縣">臺東縣 (201 筆)</option>
+            <option value="新竹縣">新竹縣 (133 筆)</option>
+            <option value="新竹市">新竹市 (18 筆)</option>
+            <option value="澎湖縣">澎湖縣 (72 筆)</option>
+            <option value="基隆市">基隆市 (60 筆)</option>
+            <option value="金門縣">金門縣 (24 筆)</option>
+            <option value="連江縣">連江縣 (1 筆)</option>
+          </select>
+        </div>
+
+        <!-- Tree Species Selector -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">優勢樹種</label>
+          <select id="filter-species" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-xs text-slate-200 outline-none transition">
+            <option value="">所有樹種 (不限)</option>
+            <option value="榕樹">榕樹 (4,530 棵)</option>
+            <option value="樟樹">樟樹 (1,109 棵)</option>
+            <option value="茄苳">茄苳 (884 棵)</option>
+            <option value="楓香">楓香 (454 棵)</option>
+            <option value="白千層">白千層 (396 棵)</option>
+            <option value="芒果">芒果 (242 棵)</option>
+            <option value="琉球松">琉球松 (206 棵)</option>
+            <option value="大葉雀榕">大葉雀榕 (193 棵)</option>
+            <option value="黑板樹">黑板樹 (155 棵)</option>
+            <option value="雀榕">雀榕 (145 棵)</option>
+            <option value="肯氏南洋杉">肯氏南洋杉 (130 棵)</option>
+            <option value="刺桐">刺桐 (120 棵)</option>
+            <option value="苦楝">苦楝 (110 棵)</option>
+            <option value="木棉">木棉 (105 棵)</option>
+            <option value="龍眼">龍眼 (95 棵)</option>
+          </select>
+        </div>
+
+        <!-- Age Filter -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">推估樹齡門檻</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button class="filter-age-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-medium" data-val="all">不限樹齡</button>
+            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="100">100年以上</button>
+            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="50">50年以上</button>
+          </div>
+        </div>
+
+        <!-- DBH (胸高直徑) Filter -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">樹胸高直徑 (DBH)</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button class="filter-dbh-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-medium" data-val="all">不限直徑</button>
+            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="1.5">≥ 1.5 米</button>
+            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="1.0">≥ 1.0 米</button>
+          </div>
+        </div>
+
+        <!-- Source Agency / Ground Truth Filter -->
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">原始資料來源 (Ground Truth)</label>
+          <select id="filter-source" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-xs text-slate-200 outline-none transition">
+            <option value="">全部資料集來源</option>
+            <option value="national_oldtree_life">農業部林業試驗所 / 老樹報報</option>
+            <option value="taipei_cultural_bureau">臺北市文化局 (受保護樹木平臺)</option>
+            <option value="taoyuan_agri_bureau">桃園市農業局 (開放資料)</option>
+            <option value="chiayi_county_gov">嘉義縣政府 (列管清冊)</option>
+            <option value="hualien_county_pdf">花蓮縣農業處 (官方公報清冊 PDF)</option>
+          </select>
+        </div>
+
+        <!-- FILTER MATCH RESULT PILL -->
+        <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div class="text-slate-400">符合條件樹木：</div>
+          <div class="font-mono font-bold text-emerald-400 text-sm" id="filtered-count">11,428 筆</div>
+        </div>
+
+        <!-- TOP TREES LIST VIEW OF FILTERED RESULTS -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-slate-400 font-medium">精選樹籍預覽 (點擊地圖定位)</label>
+            <span class="text-[10px] text-slate-500">即時清單</span>
+          </div>
+          <div id="tree-list-container" class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR FOOTER -->
+      <div class="p-3 bg-slate-950/90 border-t border-slate-800 text-[11px] text-slate-500 space-y-2">
+        <div class="flex items-center justify-between text-slate-400">
+          <span class="flex items-center space-x-1.5">
+            <i class="fa-solid fa-eye text-emerald-400"></i>
+            <span>累計訪客人次</span>
+          </span>
+          <img src="https://komarev.com/ghpvc/?username=SinLiongToo-TREE-GIS-LOCATION&label=VISITS&color=10b981&style=flat-square" alt="Visitors" class="h-4.5 rounded shadow-sm">
+        </div>
+        <div class="text-center text-[10px] text-slate-500">
+          資料最後同步：2026年10月 ｜ 授權：政府資料開放授權第1版
+        </div>
+      </div>
+    </aside>
+
+    <!-- SIDEBAR TOGGLE BUTTON (MOBILE / DESKTOP) -->
+    <button id="toggle-sidebar" class="absolute left-3 top-3 z-20 md:hidden bg-slate-900 border border-slate-700 text-slate-200 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- MAP CANVAS CONTAINER -->
+    <main class="flex-1 h-full relative">
+      <div id="map"></div>
+
+      <!-- MAP FLOATING TOOLS OVERLAY -->
+      <div class="absolute bottom-6 right-6 z-20 flex flex-col space-y-2">
+        <button id="btn-zoom-taiwan" class="w-10 h-10 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl flex items-center justify-center shadow-lg transition" title="重置全臺視野">
+          <i class="fa-solid fa-earth-asia text-emerald-400"></i>
+        </button>
+        <button id="btn-toggle-cluster" class="w-10 h-10 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl flex items-center justify-center shadow-lg transition" title="切換聚集群聚模式">
+          <i class="fa-solid fa-circle-nodes text-amber-400"></i>
+        </button>
+      </div>
+
+      <!-- MAP LEGEND -->
+      <div class="absolute bottom-6 left-6 z-20 hidden sm:block bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl text-xs space-y-1.5">
+        <div class="font-bold text-slate-200 flex items-center space-x-1.5 mb-1">
+          <i class="fa-solid fa-layer-group text-emerald-400"></i>
+          <span>圖層圖例與重要性</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+          <span class="text-slate-300">百年珍貴紀念樹木 (≥ 100年)</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="text-slate-300">各直轄市/縣市列管受保護樹木</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-cyan-500 inline-block"></span>
+          <span class="text-slate-300">官方公報提取 (花蓮等特定清冊)</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT SLIDE-IN DETAIL DOSSIER CARD -->
+    <div id="tree-dossier" class="w-96 max-w-full bg-slate-900/95 backdrop-blur-md border-l border-slate-800 flex flex-col z-30 transition-all duration-300 absolute top-0 bottom-0 right-0 translate-x-full shadow-2xl">
+      <!-- Dossier Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h3 class="font-bold text-white text-sm">受保護樹木檔案樹籍卡</h3>
+        </div>
+        <button id="close-dossier" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Dossier Content (Scrollable) -->
+      <div id="dossier-body" class="p-4 space-y-4 overflow-y-auto flex-1 text-xs">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Dossier Action Footer -->
+      <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs">
+        <a id="dossier-gmaps-link" href="#" target="_blank" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-lg flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-diamond-turn-right"></i>
+          <span>Google 導航</span>
+        </a>
+        <a id="dossier-source-link" href="#" target="_blank" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>查閱官方原始樹籍</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WORKFLOW & LEGAL DATA LINEAGE MODAL -->
+  <div id="modal-info" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
+            <i class="fa-solid fa-book-bookmark"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">臺灣受保護樹木資料管線與法源架構</h3>
+        </div>
+        <button id="close-modal" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+        <div>
+          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">一、 法規依據與列管標準</h4>
+          <p>依據《森林法》第五章之一「樹木保護專章」（第38條之2至第38條之6）以及中央訂定之《森林以外之樹木普查方法及受保護樹木認定標準》，地方主管機關每 5 年應辦理一次樹木普查。受保護樹木認定標準包含：</p>
+          <ul class="list-disc pl-5 mt-1.5 space-y-1 text-slate-400">
+            <li><strong>樹齡</strong>：達 100 年以上（地方自治條例如臺北市、臺中市等則定為 50 年以上）。</li>
+            <li><strong>規格</strong>：闊葉樹胸高直徑 (DBH) 達 1.5 米以上（或胸圍 4.7 米）；針葉樹胸高直徑達 0.75 米以上（或胸圍 2.4 米）。</li>
+            <li><strong>特殊意義</strong>：珍稀、具生態重要性、具地方人文歷史、文化代表性或居民記憶。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">二、 自動化資料管線 (Data Pipeline Workflow)</h4>
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] space-y-1 text-slate-400">
+            <p><span class="text-emerald-400">Step 1 [Fetch]</span> 批次抓取全國林試所 API、臺北市/桃園市/嘉義縣 Open Data 及花蓮縣官方公報 PDF</p>
+            <p><span class="text-amber-400">Step 2 [Extract]</span> 使用 PyMuPDF (fitz) 自動將花蓮公報 20 頁表格提取轉換為 Markdown (.md) 與結構化 JSON</p>
+            <p><span class="text-sky-400">Step 3 [Harmonize]</span> 進行 TWD97 (EPSG:3826) 轉 WGS84、縣市樹名標準化、空間相鄰 25 米去重與雙重地圖權證合併</p>
+            <p><span class="text-purple-400">Step 4 [WebGIS]</span> 生成 Leaflet + MarkerCluster 全國空間圖台，提供免金鑰即時地圖瀏覽與匯出</p>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-emerald-400 text-sm mb-1.5">三、 權責來源清單 (Ground Truth Sources)</h4>
+          <div class="border border-slate-800 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-slate-800 text-slate-300">
+                <tr>
+                  <th class="p-2">資料集</th>
+                  <th class="p-2">主管機關</th>
+                  <th class="p-2">格式</th>
+                  <th class="p-2">筆數</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-400">
+                <tr>
+                  <td class="p-2 text-white font-medium">全國城鄉老樹資源 (老樹報報)</td>
+                  <td class="p-2">農業部林業試驗所 / 中興大學</td>
+                  <td class="p-2">API / JSON</td>
+                  <td class="p-2 font-mono">10,461</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-white font-medium">臺北市受保護樹木</td>
+                  <td class="p-2">臺北市政府文化局</td>
+                  <td class="p-2">OpenData CSV</td>
+                  <td class="p-2 font-mono">3,874</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-white font-medium">桃園市受保護樹木</td>
+                  <td class="p-2">桃園市政府農業局</td>
+                  <td class="p-2">OpenData CSV</td>
+                  <td class="p-2 font-mono">595</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-white font-medium">嘉義縣受保護樹木</td>
+                  <td class="p-2">嘉義縣政府農業處</td>
+                  <td class="p-2">OpenData CSV</td>
+                  <td class="p-2 font-mono">92</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-white font-medium">花蓮縣受保護樹木列冊清冊</td>
+                  <td class="p-2">花蓮縣政府農業處</td>
+                  <td class="p-2">官方公報 PDF</td>
+                  <td class="p-2 font-mono">331</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-500 italic">
+          * 註：如涉及工程開挖或建照申請，因開放資料快照可能有時間差，仍應以所在縣市主管機關（農業局/文化局）最新發布之正式公告或地號函查為準。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    // Global State
+    let rawGeojson = window.TAIWAN_TREES_GEOJSON || null;
+    let filteredFeatures = [];
+    let map = null;
+    let clusterGroup = null;
+    let baseLayers = {};
+    let userLocationMarker = null;
+
+    // Initialize Map and Load Data
+    document.addEventListener("DOMContentLoaded", async () => {
+      initMap();
+      
+      // If data bundle was already loaded into window, render directly; otherwise fetch
+      if (!rawGeojson) {
+        try {
+          const resp = await fetch('data/processed/taiwan_protected_trees.geojson');
+          rawGeojson = await resp.json();
+        } catch(e) {
+          console.error("Fetch failed:", e);
+        }
+      }
+
+      if (rawGeojson && rawGeojson.features) {
+        filteredFeatures = rawGeojson.features;
+        renderMapFeatures(filteredFeatures);
+        setupEventListeners();
+        updateFilteredTreeList(filteredFeatures.slice(0, 50));
+      } else {
+        alert("無法載入樹木圖資，請確認 data/processed/ 目錄檔案存在。");
+      }
+    });
+
+    // Initialize Leaflet Map with Basemaps
+    function initMap() {
+      // Center of Taiwan: [23.9738, 120.9820]
+      map = L.map('map', {
+        center: [23.9738, 120.9820],
+        zoom: 8,
+        zoomControl: false,
+        maxBounds: [[20.5, 117.5], [27.0, 123.5]],
+        minZoom: 7
+      });
+
+      L.control.zoom({ position: 'topright' }).addTo(map);
+
+      // Basemap 1: Esri World Dark Gray (免 API Key / 無浮水印，高品質深色主題)
+      const esriDark = L.layerGroup([
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '&copy; Esri, HERE, DeLorme, MapmyIndia',
+          maxZoom: 19
+        }),
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '',
+          maxZoom: 19
+        })
+      ]).addTo(map);
+
+      // Basemap 2: Taiwan NLSC EMAP (國土測繪臺灣通用電子地圖)
+      const nlscEmap = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+        attribution: '&copy; 內政部國土測繪中心 (NLSC)',
+        maxZoom: 19
+      });
+
+      // Basemap 3: Taiwan NLSC Orthophoto (正射影像)
+      const nlscPhoto = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+        attribution: '&copy; 內政部國土測繪中心 (NLSC)',
+        maxZoom: 19
+      });
+
+      // Basemap 4: OpenStreetMap Standard
+      const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      });
+
+      baseLayers = {
+        "深色底圖 (Esri Dark)": esriDark,
+        "臺灣通用電子地圖 (NLSC)": nlscEmap,
+        "衛星正射影像 (NLSC)": nlscPhoto,
+        "OpenStreetMap": osm
+      };
+
+      L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+
+      // Create Cluster Group
+      clusterGroup = L.markerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false
+      });
+      map.addLayer(clusterGroup);
+    }
+
+    // Custom Tree Marker Icon
+    function createTreeMarker(feature) {
+      const p = feature.properties;
+      const isCentury = p.estimated_age && p.estimated_age >= 100;
+      
+      let colorClass = "bg-emerald-500 border-white";
+      if (isCentury) {
+        colorClass = "bg-amber-500 border-yellow-200";
+      } else if (p.source_dataset === "taipei_cultural_bureau") {
+        colorClass = "bg-teal-500 border-white";
+      } else if (p.source_dataset === "hualien_county_pdf") {
+        colorClass = "bg-cyan-500 border-white";
+      }
+
+      const iconHtml = `<div class="w-6 h-6 rounded-full ${colorClass} border-2 shadow-lg flex items-center justify-center text-[10px] text-white">
+        <i class="fa-solid fa-tree"></i>
+      </div>`;
+
+      return L.divIcon({
+        html: iconHtml,
+        className: 'custom-tree-pin',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -14]
+      });
+    }
+
+    // Render features to cluster group
+    function renderMapFeatures(features) {
+      clusterGroup.clearLayers();
+      const markers = [];
+
+      for (let i = 0; i < features.length; i++) {
+        const feat = features[i];
+        const coords = feat.geometry.coordinates;
+        if (!coords || coords[0] == null || coords[1] == null) continue;
+
+        const marker = L.marker([coords[1], coords[0]], {
+          icon: createTreeMarker(feat)
+        });
+
+        marker.on('click', () => {
+          showTreeDossier(feat);
+        });
+
+        markers.push(marker);
+      }
+
+      clusterGroup.addLayers(markers);
+      document.getElementById('filtered-count').textContent = `${features.length.toLocaleString()} 筆`;
+    }
+
+    // Display Tree Dossier in Right Sliding Panel
+    function showTreeDossier(feat) {
+      const p = feat.properties;
+      const coords = feat.geometry.coordinates;
+      const dossier = document.getElementById('tree-dossier');
+      const body = document.getElementById('dossier-body');
+
+      const isCentury = p.estimated_age && p.estimated_age >= 100;
+      const ageBadge = p.estimated_age 
+        ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isCentury ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">推估樹齡 ${p.estimated_age} 年</span>`
+        : '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">樹齡未標註</span>';
+
+      const photoHtml = p.photo_url 
+        ? `<div class="rounded-xl overflow-hidden border border-slate-700 max-h-48 bg-black mb-3">
+             <img src="${p.photo_url}" alt="${p.species_zh}" class="w-full h-full object-cover hover:scale-105 transition duration-300" onerror="this.parentElement.style.display='none'">
+           </div>`
+        : '';
+
+      const storyHtml = p.story
+        ? `<div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+             <h5 class="font-bold text-amber-400 text-xs mb-1 flex items-center space-x-1">
+               <i class="fa-solid fa-book-open-reader"></i>
+               <span>老樹歷史沿革與文化記憶</span>
+             </h5>
+             <p class="text-slate-300 leading-relaxed text-justify text-[11px]">${p.story}</p>
+           </div>`
+        : '';
+
+      const calculatedDbh = p.dbh_m ? `${p.dbh_m} m` : (p.bust_circumference_m ? `約 ${(p.bust_circumference_m / 3.1416).toFixed(2)} m` : '無紀錄');
+
+      body.innerHTML = `
+        ${photoHtml}
+        
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center space-x-2 mb-1">
+              <h4 class="text-base font-bold text-white">${p.species_zh || '受保護樹木'}</h4>
+              ${ageBadge}
+            </div>
+            ${p.scientific_name ? `<p class="text-[11px] text-slate-400 font-mono italic">${p.scientific_name}</p>` : ''}
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">${p.id}</span>
+        </div>
+
+        <!-- KEY STATS GRID -->
+        <div class="grid grid-cols-2 gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+          <div>
+            <span class="text-slate-500 block text-[10px]">胸高直徑 (DBH)</span>
+            <span class="font-bold text-slate-200 font-mono">${calculatedDbh}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">樹高 (Height)</span>
+            <span class="font-bold text-slate-200 font-mono">${p.tree_height_m ? `${p.tree_height_m} m` : '無紀錄'}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">樹胸圍 (Girth)</span>
+            <span class="font-bold text-slate-200 font-mono">${p.bust_circumference_m ? `${p.bust_circumference_m} m` : '無紀錄'}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">健康評估</span>
+            <span class="font-bold text-emerald-400">${p.health_status || '受保護列管中'}</span>
+          </div>
+        </div>
+
+        <!-- LOCATION INFO -->
+        <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-1.5">
+          <div class="flex items-start space-x-2">
+            <i class="fa-solid fa-location-dot text-rose-400 mt-0.5"></i>
+            <div>
+              <span class="text-slate-400 block text-[10px]">地理位置 / 地號</span>
+              <span class="text-slate-200 font-medium">${p.address || `${p.county}${p.township}`}</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+            <i class="fa-solid fa-compass text-slate-500"></i>
+            <span class="font-mono">${coords[1].toFixed(6)}, ${coords[0].toFixed(6)}</span>
+          </div>
+        </div>
+
+        ${storyHtml}
+
+        <!-- ADMINISTRATIVE LINEAGE & GROUND TRUTH -->
+        <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-1.5">
+          <h5 class="font-bold text-slate-300 text-[11px] flex items-center space-x-1">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+            <span>管理單位與法源憑證 (Ground Truth)</span>
+          </h5>
+          <div class="text-[11px] space-y-1 text-slate-400">
+            <div><span class="text-slate-500">主管/維護單位：</span> ${p.owner_or_manager || p.source_agency || '地方政府主管機關'}</div>
+            <div><span class="text-slate-500">資料來源平台：</span> ${p.source_agency}</div>
+            <div><span class="text-slate-500">法規保護依據：</span> 《森林法》第38條之2或縣市樹木保護自治條例</div>
+          </div>
+        </div>
+      `;
+
+      // Navigation & Source Link Updates
+      document.getElementById('dossier-gmaps-link').href = `https://www.google.com/maps/search/?api=1&query=${coords[1]},${coords[0]}`;
+      document.getElementById('dossier-source-link').href = p.ground_truth_url || '#';
+
+      dossier.classList.remove('translate-x-full');
+    }
+
+    // Apply Combined Filters
+    function applyFilters() {
+      const keyword = document.getElementById('filter-keyword').value.trim().toLowerCase();
+      const county = document.getElementById('filter-county').value;
+      const species = document.getElementById('filter-species').value;
+      const source = document.getElementById('filter-source').value;
+      
+      const activeAgeBtn = document.querySelector('.filter-age-btn.active');
+      const ageFilter = activeAgeBtn ? activeAgeBtn.dataset.val : 'all';
+
+      const activeDbhBtn = document.querySelector('.filter-dbh-btn.active');
+      const dbhFilter = activeDbhBtn ? activeDbhBtn.dataset.val : 'all';
+
+      filteredFeatures = rawGeojson.features.filter(feat => {
+        const p = feat.properties;
+        
+        // County
+        if (county && p.county !== county) return false;
+
+        // Species
+        if (species && p.species_zh !== species) return false;
+
+        // Source
+        if (source && p.source_dataset !== source) return false;
+
+        // Age
+        if (ageFilter === '100' && (!p.estimated_age || p.estimated_age < 100)) return false;
+        if (ageFilter === '50' && (!p.estimated_age || p.estimated_age < 50)) return false;
+
+        // DBH
+        const effectiveDbh = p.dbh_m || (p.bust_circumference_m ? p.bust_circumference_m / 3.1416 : null);
+        if (dbhFilter === '1.5' && (!effectiveDbh || effectiveDbh < 1.5)) return false;
+        if (dbhFilter === '1.0' && (!effectiveDbh || effectiveDbh < 1.0)) return false;
+
+        // Keyword
+        if (keyword) {
+          const targetStr = `${p.species_zh || ''} ${p.scientific_name || ''} ${p.county || ''} ${p.township || ''} ${p.address || ''} ${p.owner_or_manager || ''} ${p.id || ''} ${p.tree_id || ''}`.toLowerCase();
+          if (!targetStr.includes(keyword)) return false;
+        }
+
+        return true;
+      });
+
+      renderMapFeatures(filteredFeatures);
+      updateFilteredTreeList(filteredFeatures.slice(0, 50));
+
+      // If county selected, auto-pan to county bounds
+      if (county && filteredFeatures.length > 0) {
+        const bounds = L.latLngBounds(filteredFeatures.map(f => [f.geometry.coordinates[1], f.geometry.coordinates[0]]));
+        map.fitBounds(bounds, { maxZoom: 13, padding: [30, 30] });
+      }
+    }
+
+    // Update Sidebar List of Trees
+    function updateFilteredTreeList(sampleFeatures) {
+      const container = document.getElementById('tree-list-container');
+      if (sampleFeatures.length === 0) {
+        container.innerHTML = '<div class="text-slate-500 text-center py-4">無符合條件樹木</div>';
+        return;
+      }
+
+      container.innerHTML = sampleFeatures.map(f => {
+        const p = f.properties;
+        const coords = f.geometry.coordinates;
+        return `
+          <div class="p-2 bg-slate-950/80 hover:bg-slate-800 rounded-lg border border-slate-800/80 cursor-pointer transition flex items-center justify-between" onclick="flyToTree(${coords[1]}, ${coords[0]}, '${p.id}')">
+            <div>
+              <div class="font-bold text-slate-200 text-xs">${p.species_zh || '老樹'} <span class="text-slate-500 font-normal">(${p.county}${p.township || ''})</span></div>
+              <div class="text-[10px] text-slate-400 truncate max-w-[190px]">${p.address || p.id}</div>
+            </div>
+            ${p.estimated_age ? `<span class="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">${p.estimated_age}年</span>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Fly to specific tree and open card
+    window.flyToTree = function(lat, lon, treeId) {
+      map.flyTo([lat, lon], 17, { duration: 1.2 });
+      const feat = rawGeojson.features.find(f => f.properties.id === treeId);
+      if (feat) showTreeDossier(feat);
+    };
+
+    // Setup UI Listeners
+    function setupEventListeners() {
+      // Keyword search with debounce
+      let searchTimeout;
+      const kwInput = document.getElementById('filter-keyword');
+      const clearKw = document.getElementById('clear-keyword');
+
+      kwInput.addEventListener('input', () => {
+        clearKw.classList.toggle('hidden', !kwInput.value);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 250);
+      });
+
+      clearKw.addEventListener('click', () => {
+        kwInput.value = '';
+        clearKw.classList.add('hidden');
+        applyFilters();
+      });
+
+      // Select Dropdowns
+      document.getElementById('filter-county').addEventListener('change', applyFilters);
+      document.getElementById('filter-species').addEventListener('change', applyFilters);
+      document.getElementById('filter-source').addEventListener('change', applyFilters);
+
+      // Age Buttons
+      document.querySelectorAll('.filter-age-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-age-btn').forEach(b => {
+            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+            b.classList.add('border-slate-700', 'bg-slate-800', 'text-slate-300');
+          });
+          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+          applyFilters();
+        });
+      });
+
+      // DBH Buttons
+      document.querySelectorAll('.filter-dbh-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-dbh-btn').forEach(b => {
+            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+            b.classList.add('border-slate-700', 'bg-slate-800', 'text-slate-300');
+          });
+          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+          applyFilters();
+        });
+      });
+
+      // Reset Button
+      document.getElementById('btn-reset-filters').addEventListener('click', () => {
+        document.getElementById('filter-keyword').value = '';
+        document.getElementById('clear-keyword').classList.add('hidden');
+        document.getElementById('filter-county').value = '';
+        document.getElementById('filter-species').value = '';
+        document.getElementById('filter-source').value = '';
+        document.querySelectorAll('.filter-age-btn')[0].click();
+        document.querySelectorAll('.filter-dbh-btn')[0].click();
+        map.flyTo([23.9738, 120.9820], 8);
+      });
+
+      // Dossier Close
+      document.getElementById('close-dossier').addEventListener('click', () => {
+        document.getElementById('tree-dossier').classList.add('translate-x-full');
+      });
+
+      // Sidebar Toggle
+      document.getElementById('toggle-sidebar').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      });
+
+      // Reset Map Zoom
+      document.getElementById('btn-zoom-taiwan').addEventListener('click', () => {
+        map.flyTo([23.9738, 120.9820], 8);
+      });
+
+      // Toggle Cluster Mode
+      let isClusterActive = true;
+      document.getElementById('btn-toggle-cluster').addEventListener('click', () => {
+        if (isClusterActive) {
+          map.removeLayer(clusterGroup);
+          // Add as raw geojson layer
+          window.rawLayer = L.geoJSON(filteredFeatures, {
+            pointToLayer: (feat, latlng) => L.marker(latlng, { icon: createTreeMarker(feat) }),
+            onEachFeature: (feat, layer) => layer.on('click', () => showTreeDossier(feat))
+          }).addTo(map);
+          isClusterActive = false;
+        } else {
+          if (window.rawLayer) map.removeLayer(window.rawLayer);
+          map.addLayer(clusterGroup);
+          isClusterActive = true;
+        }
+      });
+
+      // Info Modal
+      const modal = document.getElementById('modal-info');
+      document.getElementById('btn-info').addEventListener('click', () => modal.classList.remove('hidden'));
+      document.getElementById('close-modal').addEventListener('click', () => modal.classList.add('hidden'));
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+      // GPS Nearest Tree Locator
+      document.getElementById('btn-gps').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          alert("您的瀏覽器不支援 GPS 定位功能。");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            
+            if (userLocationMarker) map.removeLayer(userLocationMarker);
+            userLocationMarker = L.circleMarker([lat, lon], {
+              radius: 9,
+              fillColor: '#3b82f6',
+              color: '#ffffff',
+              weight: 3,
+              opacity: 1,
+              fillOpacity: 0.9
+            }).addTo(map).bindPopup("您的目前位置").openPopup();
+
+            // Find 5 nearest trees
+            const sorted = [...filteredFeatures].map(f => {
+              const c = f.geometry.coordinates;
+              const d = getDistanceMeters(lat, lon, c[1], c[0]);
+              return { feat: f, dist: d };
+            }).sort((a, b) => a.dist - b.dist);
+
+            if (sorted.length > 0) {
+              const nearest = sorted[0];
+              map.flyTo([lat, lon], 14);
+              showTreeDossier(nearest.feat);
+              alert(`已定位！距離您最近的受保護樹木是【${nearest.feat.properties.species_zh}】，直線距離約 ${(nearest.dist / 1000).toFixed(2)} 公里。`);
+            }
+          },
+          (err) => {
+            alert(`GPS 定位失敗：${err.message}（請確認瀏覽器授權定位權限）`);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+
+      // GeoJSON Export
+      document.getElementById('export-geojson').addEventListener('click', () => {
+        const fc = {
+          type: "FeatureCollection",
+          metadata: {
+            title: "臺灣受保護樹木篩選資料匯出",
+            exported_at: new Date().toISOString(),
+            count: filteredFeatures.length
+          },
+          features: filteredFeatures
+        };
+        downloadBlob(JSON.stringify(fc, null, 2), 'taiwan_protected_trees_export.geojson', 'application/json');
+      });
+
+      // CSV Export
+      document.getElementById('export-csv').addEventListener('click', () => {
+        const headers = ["ID", "TreeID", "縣市", "鄉鎮市區", "樹種", "學名", "推估樹齡", "胸高直徑_m", "樹高_m", "樹胸圍_m", "地址", "管理單位", "經度_WGS84", "緯度_WGS84", "原始來源"];
+        const rows = filteredFeatures.map(f => {
+          const p = f.properties;
+          const c = f.geometry.coordinates;
+          return [
+            p.id,
+            p.tree_id,
+            p.county,
+            p.township,
+            p.species_zh,
+            p.scientific_name || '',
+            p.estimated_age || '',
+            p.dbh_m || '',
+            p.tree_height_m || '',
+            p.bust_circumference_m || '',
+            `"${(p.address || '').replace(/"/g, '""')}"`,
+            `"${(p.owner_or_manager || '').replace(/"/g, '""')}"`,
+            c[0],
+            c[1],
+            p.source_agency
+          ].join(',');
+        });
+        const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\n');
+        downloadBlob(csvContent, 'taiwan_protected_trees_export.csv', 'text/csv;charset=utf-8');
+      });
+    }
+
+    // Distance calculation
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const dPhi = (lat2 - lat1) * Math.PI / 180;
+      const dLam = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dPhi/2)**2 + Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLam/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // Download helper
+    function downloadBlob(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
