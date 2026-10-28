@@ -15,6 +15,11 @@
 1. **PDF 提取策略**：使用 PyMuPDF (`fitz.open().find_tables()`) 進行向量表格抽取，結構化轉為 Markdown (`data/extracted_md/hualien_protected_trees.md`) 及 JSON。
 2. **Zero-CORS 離線架構**：為避免使用者直接雙擊 `index.html`（`file:///` 協議）時被瀏覽器阻擋本地 JSON fetch，特別在 Step 4 生成 `data/processed/taiwan_protected_trees_data.js`，將圖資掛載至 `window.TAIWAN_TREES_GEOJSON`，實現免伺服器離線秒開。
 3. **圖資圖層**：預設載入 Esri World Dark Gray Canvas（免 API Key、零浮水印）搭配內政部國土測繪中心 (NLSC) 臺灣通用電子地圖與正射影像圖、以及 OpenStreetMap。
+4. **雲端部署與訪客計數**：
+   - GitHub 儲存庫：`https://github.com/SinLiongToo/TREE_GIS_LOCATION`
+   - GitHub Pages 正式發布網址：`https://sinliongtoo.github.io/TREE_GIS_LOCATION/`
+   - 訪客計數徽章：整合 `komarev.com/ghpvc` 於頂部狀態欄、側邊欄底端與 README，並加入 `.nojekyll` 確保純靜態資源完整提供。
+   - Cloudflare Pages 鏡像：支援由 Cloudflare Pages 連接 GitHub `SinLiongToo/TREE_GIS_LOCATION`，自動派發全球 Edge CDN 鏡像網址。
 
 ## 三、 常見地雷與注意事項 (Gotchas)
 1. **Windows 控制台編碼**：PowerShell 預設為 CP950，Python 腳本內必須加入 `sys.stdout.reconfigure(encoding='utf-8')`，以防 Unicode 符號（如 Checkmark）引發 `UnicodeEncodeError`。
