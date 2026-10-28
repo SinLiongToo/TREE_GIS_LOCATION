@@ -11,7 +11,7 @@
 
 🌐 **線上公開訪問入口 (Live Demos)**：
 - 🟢 **GitHub Pages**: [https://sinliongtoo.github.io/TREE_GIS_LOCATION/](https://sinliongtoo.github.io/TREE_GIS_LOCATION/)
-- 🟠 **Cloudflare Pages 分流鏡像**: [https://tree-gis-location.pages.dev/](https://tree-gis-location.pages.dev/)
+- 🟠 **Cloudflare 分流鏡像**: [https://tree-gis-location.masahltu0322.workers.dev/](https://tree-gis-location.masahltu0322.workers.dev/)
 
 ---
 

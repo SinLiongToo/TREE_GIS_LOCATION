@@ -47,4 +47,4 @@
 
 ## 🗺️ 搭配系統 (Online WebGIS)
 - **GitHub Pages**：[https://sinliongtoo.github.io/TREE_GIS_LOCATION/](https://sinliongtoo.github.io/TREE_GIS_LOCATION/)
-- **Cloudflare Pages**：[https://tree-gis-location.pages.dev/](https://tree-gis-location.pages.dev/)
+- **Cloudflare 鏡像**：[https://tree-gis-location.masahltu0322.workers.dev/](https://tree-gis-location.masahltu0322.workers.dev/)
