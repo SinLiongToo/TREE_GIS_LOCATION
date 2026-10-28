@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>臺灣受保護樹木與珍貴老樹 WebGIS 全國地理資訊系統</title>
-  <meta name="description" content="依據《森林法》與各縣市樹木保護自治法規，整合全台超過萬筆列管受保護樹木、珍貴老樹之互動式地理資訊地圖。">
+  <title>CHHIAU-CHHŌE樹王公（搜揣樹王公）｜臺灣受保護樹木與珍貴老樹 WebGIS 全國地理資訊系統</title>
+  <meta name="description" content="CHHIAU-CHHŌE樹王公（搜揣樹王公）：依據《森林法》與各縣市樹木保護自治法規，整合全台超過萬筆列管受保護樹木、珍貴老樹之互動式地理資訊地圖。">
   
   <!-- Leaflet CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -80,10 +80,14 @@
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <h1 class="text-base font-bold text-white tracking-wide">臺灣受保護樹木與珍貴老樹 WebGIS</h1>
-          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold uppercase tracking-wider">全國整合版</span>
+          <h1 class="text-base font-bold text-white tracking-wide flex items-center gap-1.5 flex-wrap">
+            <span class="text-emerald-400 font-extrabold">CHHIAU-CHHŌE樹王公</span>
+            <span class="text-xs text-amber-300 font-medium">（搜揣樹王公）</span>
+            <span class="text-xs text-slate-300 hidden md:inline">｜臺灣受保護樹木 WebGIS</span>
+          </h1>
+          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold uppercase tracking-wider hidden sm:inline-block">全國整合版</span>
         </div>
-        <p class="text-[11px] text-slate-400 hidden sm:block">依據《森林法》第38條之2樹木保護專章與各縣市受保護樹木自治法規</p>
+        <p class="text-[11px] text-slate-400 hidden sm:block">依據《森林法》樹木保護專章與各縣市自治法規 ｜ 全台 11,428 筆老樹空間踏查</p>
       </div>
     </div>
 
@@ -122,6 +126,13 @@
 
     <!-- HEADER ACTION BUTTONS -->
     <div class="flex items-center space-x-2">
+      <!-- Book Modal Button -->
+      <button id="btn-book" class="px-2.5 py-1.5 bg-gradient-to-r from-emerald-950/80 to-teal-900/80 hover:from-emerald-900 hover:to-teal-800 text-emerald-300 text-xs rounded-lg border border-emerald-500/40 flex items-center space-x-1.5 shadow-sm transition">
+        <i class="fa-solid fa-book-open text-amber-400"></i>
+        <span class="hidden sm:inline">CHHIAU-CHHŌE樹王公</span>
+        <span class="sm:hidden">樹王公</span>
+      </button>
+
       <!-- Locate Nearest Tree Button -->
       <button id="btn-gps" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-crosshairs text-sky-400"></i>
@@ -465,6 +476,94 @@
 
         <div class="text-[11px] text-slate-500 italic">
           * 註：如涉及工程開挖或建照申請，因開放資料快照可能有時間差，仍應以所在縣市主管機關（農業局/文化局）最新發布之正式公告或地號函查為準。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOK "CHHIAU-CHHŌE樹王公" INTRO MODAL -->
+  <div id="modal-book" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-emerald-500/40 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>《CHHIAU-CHHŌE樹王公》</span>
+              <span class="text-xs text-amber-300 font-normal">搜揣樹王公</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">杜信龍 著 ｜ 台語貓 繪 ｜ 史秀里冊房 出版</p>
+          </div>
+        </div>
+        <button id="close-book-modal" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Book Info Content Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+        <!-- Cover Image -->
+        <div class="md:col-span-5 flex flex-col items-center">
+          <div class="relative group rounded-xl overflow-hidden border border-emerald-500/30 shadow-lg shadow-emerald-950/50">
+            <img src="assets/cover_shuwanggong.jpg" alt="CHHIAU-CHHŌE樹王公 封面" class="w-full h-auto object-cover max-h-72">
+          </div>
+          <span class="text-[11px] text-slate-400 mt-2 font-mono">ISBN: 9786269928811</span>
+          <span class="text-[10px] text-emerald-400">2025年12月出版 ｜ 台文生態繪本</span>
+        </div>
+
+        <!-- Book Introduction & Philosophy -->
+        <div class="md:col-span-7 space-y-3 text-xs text-slate-300 leading-relaxed">
+          <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+            <h4 class="font-bold text-amber-300 text-sm mb-1">【故事緣起與未來寓言】</h4>
+            <p class="text-slate-300">
+              這是一本結合<strong>賽博龐克（Cyberpunk）、未來科幻與生態警世寓言</strong>的台語繪本。
+              故事設定在一個科技高度發達，但地球自然環境退化、人類甚至必須仰賴人工樹苗呼吸的未來城市中。
+              主角在睡夢中踏上尋找大自然守護者——<strong>「樹王公」</strong>的旅程，體悟到「沒有大自然，就沒有新鮮空氣」的真諦。
+            </p>
+          </div>
+
+          <div class="bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
+            <h4 class="font-bold text-emerald-400 text-sm mb-1">【從繪本夢境到真實大地 WebGIS】</h4>
+            <p class="text-slate-300">
+              繪本裡的主角在夢中<strong>「搜揣樹王公（尋找樹王公）」</strong>；而在現實的臺灣土地上，我們透過這套 <strong>WebGIS 全國受保護樹木地理資訊系統</strong>，整合了 22 縣市超過 11,428 筆列管老樹與百年名木，把守護臺灣土地的大自然長老找出來、守護下來！
+            </p>
+          </div>
+
+          <!-- Purchase Channels -->
+          <div>
+            <h4 class="font-semibold text-slate-200 mb-2 flex items-center space-x-1.5">
+              <i class="fa-solid fa-basket-shopping text-emerald-400"></i>
+              <span>支持原創台語繪本・購書通路：</span>
+            </h4>
+            <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+              <a href="https://www.books.com.tw/products/0011038799?srsltid=AYCX9vLFB8np9T7HlhiiqZAAJQPHV5fABVTsOQ-UitKJV4a5pxe0owFx" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>博客來網路書店</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+              <a href="https://www.taiouan.com.tw/zh-TW/product/btj326" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>台灣e店</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+              <a href="https://www.momoshop.com.tw/product/14733309?srsltid=AfmBOoqLL5aQzDmb7iEY47U0oBUMF7HlwtwT7tL_nSpqzndhulHyhUEs" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>MOMO 購物網</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+              <a href="https://www.eslite.com/product/10012084572683048392009?srsltid=AfmBOoq7zw_DDxrsNKPBVhLNaeCEJ23e8_cGWAKQcqCgTf61CHhepWR-" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>誠品線上</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+              <a href="https://www.kingstone.com.tw/basic/2028630883402/?lid=search&actid=WISE&kw=CHHIAU-CHH%C5%8CE%E6%A8%B9%E7%8E%8B%E5%85%AC" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>金石堂網路書店</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+              <a href="https://www.taaze.tw/products/11101079172.html?srsltid=AfmBOoqsRchdBoCMhJa_jprKVYyW1KQfxaI9A1TDMtvC3guOt_xcRjb_" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-between transition">
+                <span>讀冊生活 TAAZE</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -903,6 +1002,12 @@
       document.getElementById('btn-info').addEventListener('click', () => modal.classList.remove('hidden'));
       document.getElementById('close-modal').addEventListener('click', () => modal.classList.add('hidden'));
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+      // Book "CHHIAU-CHHŌE樹王公" Modal
+      const bookModal = document.getElementById('modal-book');
+      document.getElementById('btn-book').addEventListener('click', () => bookModal.classList.remove('hidden'));
+      document.getElementById('close-book-modal').addEventListener('click', () => bookModal.classList.add('hidden'));
+      bookModal.addEventListener('click', (e) => { if (e.target === bookModal) bookModal.classList.add('hidden'); });
 
       // GPS Nearest Tree Locator
       document.getElementById('btn-gps').addEventListener('click', () => {

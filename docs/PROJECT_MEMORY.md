@@ -20,6 +20,7 @@
    - GitHub Pages 正式發布網址：`https://sinliongtoo.github.io/TREE_GIS_LOCATION/`
    - 訪客計數徽章：整合 `komarev.com/ghpvc` 於頂部狀態欄、側邊欄底端與 README，並加入 `.nojekyll` 確保純靜態資源完整提供。
    - Cloudflare Pages 鏡像：支援由 Cloudflare Pages 連接 GitHub `SinLiongToo/TREE_GIS_LOCATION`，自動派發全球 Edge CDN 鏡像網址。
+5. **創作源起與人文實踐**：本 WebGIS 系統以作者杜信龍原創台語科幻生態繪本《CHHIAU-CHHŌE樹王公》（搜揣樹王公，史秀里冊房，ISBN 9786269928811）為靈感核心，將主角夢境「搜揣樹王公」轉化為現實全臺 11,428 筆老樹空間探查，並於系統首頁 Title、導覽列、專屬 Modal、`README.md` 及專冊 `README_CHHIAU_CHHOE.md` 完整串聯。
 
 ## 三、 常見地雷與注意事項 (Gotchas)
 1. **Windows 控制台編碼**：PowerShell 預設為 CP950，Python 腳本內必須加入 `sys.stdout.reconfigure(encoding='utf-8')`，以防 Unicode 符號（如 Checkmark）引發 `UnicodeEncodeError`。

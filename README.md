@@ -1,7 +1,8 @@
-# 🌲 臺灣受保護樹木與珍貴老樹 GIS 地理資訊系統
-### (Taiwan Protected & Precious Old Trees WebGIS Platform)
+# 🌲 CHHIAU-CHHŌE樹王公（搜揣樹王公）
+### 臺灣受保護樹木與珍貴老樹 WebGIS 全國地理資訊系統
+##### Taiwan Protected & Precious Old Trees WebGIS Platform
 
-> 依據《森林法》樹木保護專章與各縣市政府樹木保護自治法規，全自動抓取、提取（PDF 轉 Markdown）、正規化整併，並呈現於現代化 WebGIS 互動地圖。
+> 🌿 結合生態繪本《CHHIAU-CHHŌE樹王公》的尋樹初心，依據《森林法》樹木保護專章與各縣市政府樹木保護自治法規，全自動抓取、提取（PDF 轉 Markdown）、正規化整併，呈現於現代化 WebGIS 互動地圖。
 
 ![全台受保護樹木涵蓋 22 縣市](https://img.shields.io/badge/列管點位-11%2C428筆-emerald?style=for-the-badge&logo=treehouse)
 ![百年老樹](https://img.shields.io/badge/百年名木-1%2C362棵-amber?style=for-the-badge)
@@ -11,6 +12,36 @@
 🌐 **線上公開訪問入口 (Live Demos)**：
 - 🟢 **GitHub Pages**: [https://sinliongtoo.github.io/TREE_GIS_LOCATION/](https://sinliongtoo.github.io/TREE_GIS_LOCATION/)
 - 🟠 **Cloudflare Pages 分流鏡像**: [https://tree-gis-location.pages.dev/](https://tree-gis-location.pages.dev/)
+
+---
+
+## 📖 核心靈感源起：《CHHIAU-CHHŌE樹王公》（搜揣樹王公）
+
+<div align="center">
+  <img src="assets/cover_shuwanggong.jpg" alt="CHHIAU-CHHŌE樹王公 繪本封面" width="360" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);" />
+  <p><strong>《CHHIAU-CHHŌE樹王公》（搜揣樹王公）</strong><br/>
+  作者：杜信龍 ｜ 繪者：台語貓 ｜ 出版社：史秀里冊房 ｜ 出版日期：2025/12/01 ｜ ISBN：9786269928811</p>
+</div>
+
+### 🌌 故事簡介與未來生態寓言 (Book Synopsis)
+《**CHHIAU-CHHŌE樹王公**》是一本結合**賽博龐克（Cyberpunk）、未來科幻與生態警世寓言**的原創台語繪本：
+- **背景設定**：在一個科技高度發達，但地球自然環境遭受嚴重破壞、失去大自然的未來城市裡，人類甚至必須依靠人工樹苗製造的氧氣來呼吸。
+- **劇情主軸**：主角在睡夢中踏上一場尋找大自然守護者——「**樹王公**」的奇幻旅程，在路途上一幕幕體悟到土地的溫度與大自然的珍貴。
+- **核心寓意**：透過詩意的文字與震撼的科幻畫面，引導讀者反思「**沒有大自然，就沒有新鮮空氣**」，重構人與大自然、樹木之間密不可分的依存關係。
+
+### 🌿 從繪本夢境踏入現實大地：為什麼打造這套 WebGIS？
+在繪本中，孩子在睡夢裡**「搜揣樹王公（尋找樹王公）」**；  
+而在現實的臺灣土地上，我們透過這套 **WebGIS 全國地理資訊系統**，自動化爬梳全臺 22 縣市官方權責普查清單，將 **11,428 筆** 列管受保護樹木、珍貴老樹與百年名木的精準坐標、推估樹齡、胸高直徑 (DBH) 與實地影像全數定位上圖！
+
+讓每一位讀者、孩子與公民，不只能在繪本裡感受對大自然的渴望，更能走出戶外、打開手機地圖，在生活周遭親自**「搜揣樹王公」**，探訪守護這座島嶼的大自然長老！
+
+### 🛒 實體購書通路 (Bookstore Links)
+- 📚 **博客來網路書店**：[立即前往購書 (商品編號 0011038799)](https://www.books.com.tw/products/0011038799?srsltid=AYCX9vLFB8np9T7HlhiiqZAAJQPHV5fABVTsOQ-UitKJV4a5pxe0owFx)
+- 🏬 **台灣e店**：[台灣e店線上專頁](https://www.taiouan.com.tw/zh-TW/product/btj326)
+- 🛍️ **MOMO 購物網**：[MOMO 書店專頁](https://www.momoshop.com.tw/product/14733309?srsltid=AfmBOoqLL5aQzDmb7iEY47U0oBUMF7HlwtwT7tL_nSpqzndhulHyhUEs)
+- 📖 **誠品線上**：[誠品線上專頁](https://www.eslite.com/product/10012084572683048392009?srsltid=AfmBOoq7zw_DDxrsNKPBVhLNaeCEJ23e8_cGWAKQcqCgTf61CHhepWR-)
+- 🏛️ **金石堂網路書店**：[金石堂專頁](https://www.kingstone.com.tw/basic/2028630883402/?lid=search&actid=WISE&kw=CHHIAU-CHH%C5%8CE%E6%A8%B9%E7%8E%8B%E5%85%AC)
+- 📑 **讀冊生活 TAAZE**：[TAAZE 專頁](https://www.taaze.tw/products/11101079172.html?srsltid=AfmBOoqsRchdBoCMhJa_jprKVYyW1KQfxaI9A1TDMtvC3guOt_xcRjb_)
 
 ---
 
