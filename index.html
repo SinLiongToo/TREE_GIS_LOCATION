@@ -56,6 +56,15 @@
     .marker-cluster-medium div { background-color: rgba(217, 119, 6, 0.85); color: white; font-weight: 700; }
     .marker-cluster-large { background-color: rgba(239, 68, 68, 0.4); }
     .marker-cluster-large div { background-color: rgba(220, 38, 38, 0.85); color: white; font-weight: 700; }
+
+    /* Filter Active Button Highlight */
+    .filter-age-btn.active, .filter-dbh-btn.active {
+      background-color: rgba(16, 185, 129, 0.25) !important;
+      border-color: #10b981 !important;
+      color: #6ee7b7 !important;
+      font-weight: 700 !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+    }
   </style>
 
   <!-- Load zero-CORS offline data bundle directly -->
@@ -234,9 +243,9 @@
         <div>
           <label class="block text-slate-400 mb-1 font-medium">推估樹齡門檻</label>
           <div class="grid grid-cols-3 gap-1.5">
-            <button class="filter-age-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-medium" data-val="all">不限樹齡</button>
-            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="100">100年以上</button>
-            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="50">50年以上</button>
+            <button class="filter-age-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-bold transition-all duration-150" data-val="all">不限樹齡</button>
+            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center font-medium transition-all duration-150" data-val="100">100年以上</button>
+            <button class="filter-age-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center font-medium transition-all duration-150" data-val="50">50年以上</button>
           </div>
         </div>
 
@@ -244,9 +253,9 @@
         <div>
           <label class="block text-slate-400 mb-1 font-medium">樹胸高直徑 (DBH)</label>
           <div class="grid grid-cols-3 gap-1.5">
-            <button class="filter-dbh-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-medium" data-val="all">不限直徑</button>
-            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="1.5">≥ 1.5 米</button>
-            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center" data-val="1.0">≥ 1.0 米</button>
+            <button class="filter-dbh-btn active px-2 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-300 text-center font-bold transition-all duration-150" data-val="all">不限直徑</button>
+            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center font-medium transition-all duration-150" data-val="1.5">≥ 1.5 米</button>
+            <button class="filter-dbh-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-center font-medium transition-all duration-150" data-val="1.0">≥ 1.0 米</button>
           </div>
         </div>
 
@@ -822,10 +831,11 @@
       document.querySelectorAll('.filter-age-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           document.querySelectorAll('.filter-age-btn').forEach(b => {
-            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium', 'font-bold');
             b.classList.add('border-slate-700', 'bg-slate-800', 'text-slate-300');
           });
-          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+          btn.classList.remove('border-slate-700', 'bg-slate-800', 'text-slate-300');
+          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-bold');
           applyFilters();
         });
       });
@@ -834,10 +844,11 @@
       document.querySelectorAll('.filter-dbh-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           document.querySelectorAll('.filter-dbh-btn').forEach(b => {
-            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+            b.classList.remove('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium', 'font-bold');
             b.classList.add('border-slate-700', 'bg-slate-800', 'text-slate-300');
           });
-          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-medium');
+          btn.classList.remove('border-slate-700', 'bg-slate-800', 'text-slate-300');
+          btn.classList.add('active', 'border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300', 'font-bold');
           applyFilters();
         });
       });
