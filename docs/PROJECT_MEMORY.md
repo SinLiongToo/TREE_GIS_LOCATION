@@ -22,6 +22,10 @@
    - Cloudflare Pages 鏡像：支援由 Cloudflare Pages 連接 GitHub `SinLiongToo/TREE_GIS_LOCATION`，自動派發全球 Edge CDN 鏡像網址。
 5. **創作源起與人文實踐**：本 WebGIS 系統以作者杜信龍原創台語科幻生態繪本《CHHIAU-CHHŌE樹王公》（搜揣樹王公，史秀里冊房，ISBN 9786269928811）為靈感核心，將主角夢境「搜揣樹王公」轉化為現實全臺 11,428 筆老樹空間探查，並於系統首頁 Title、導覽列、專屬 Modal、`README.md` 及專冊 `README_CHHIAU_CHHOE.md` 完整串聯。
 6. **全國樹木修剪作業手冊與技術規範整合**：整合中央上位機關（農業部林保署、林試所、國土管理署第02902章植栽養護）與地方指標縣市（臺北、新北、高雄、臺南）之官方樹木修剪手冊、技術規範與 PDF 下載途徑，於頂部 Header、側邊欄及三欄 Tab 分頁 Modal 內提供使用者直接一鍵查閱。
+7. **多源真實底圖快速切換器與 Google 360° 街景聯動**：
+   - 地圖左上方常駐顯眼快捷切換膠囊按鈕：`[深色底圖] [🛰️ Google 衛星空照] [臺灣電子地圖]`，徹底解決使用者找不到 Leaflet 預設右上角微小收合圖層控制項的問題。
+   - 整合免 API Key 之 Google Hybrid 實時衛星混合空拍（`lyrs=y`，含繁體中文路名地標、公園建築輪廓）與 Esri World Imagery 高解析空拍。
+   - 老樹檔案抽屜（Dossier）新增「360° 街景」快捷鈕，動態串接 Google Maps Street View 參數（`api=1&map_action=pano&viewpoint={lat},{lon}`），一鍵直擊現場老樹實景。
 
 ## 三、 常見地雷與注意事項 (Gotchas)
 1. **Windows 控制台編碼**：PowerShell 預設為 CP950，Python 腳本內必須加入 `sys.stdout.reconfigure(encoding='utf-8')`，以防 Unicode 符號（如 Checkmark）引發 `UnicodeEncodeError`。

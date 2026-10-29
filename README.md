@@ -11,7 +11,8 @@
 
 🌐 **線上公開訪問入口 (Live Demos)**：
 - 🟢 **GitHub Pages**: [https://sinliongtoo.github.io/TREE_GIS_LOCATION/](https://sinliongtoo.github.io/TREE_GIS_LOCATION/)
-- 🟠 **Cloudflare 分流鏡像**: [https://tree-gis-location.masahltu0322.workers.dev/](https://tree-gis-location.masahltu0322.workers.dev/)
+- 🟠 **Cloudflare Pages 官方鏡像**: [https://tree-gis-location.pages.dev/](https://tree-gis-location.pages.dev/)
+- 🌐 **Cloudflare Workers 鏡像**: [https://tree-gis-location.masahltu0322.workers.dev/](https://tree-gis-location.masahltu0322.workers.dev/)
 
 ---
 
@@ -55,10 +56,10 @@
    - 產出標準 Markdown 表格檔案 [`data/extracted_md/hualien_protected_trees.md`](file:///c:/Users/tu-hs/OneDrive/文件/2022_0308_MASA/2022-0708/Projects_antigravity/TREE_GIS_LOCATION/data/extracted_md/hualien_protected_trees.md)。
    - 將臺灣專用 **TWD97 二度分帶坐標** 即時高精度解算為 **WGS84 經緯度** 上圖。
 3. **🧭 現代化 WebGIS 互動圖台**：
-   - **多底圖切換**：Esri 深色底圖（免金鑰/無浮水印）、內政部國土測繪中心 (NLSC) 臺灣通用電子地圖、NLSC 衛星正射影像、OpenStreetMap。
+   - **多底圖快捷膠囊**：常駐左上角快捷按鈕 `[深色底圖] [🛰️ Google 衛星空照] [臺灣電子地圖]`，並支援右上角完整圖層選單（Google 衛星混合圖、Esri 國際衛星航照、NLSC 臺灣通用電子地圖、NLSC 正射影像、OpenStreetMap）。
    - **空間群聚 (MarkerCluster)**：流暢承載萬級點位，支援滑鼠滾輪縮放與點擊散開。
    - **多維交叉篩選器**：縣市、前 20 大樹種、樹齡門檻（百年老樹/五十年老樹）、胸高直徑 (DBH ≥ 1.5m / ≥ 1.0m)、主管來源機構、關鍵字模糊搜尋。
-   - **獨立樹籍卡抽屜**：展示樹種、學名、編號、推估樹齡、胸徑/胸圍、樹高、健康狀態、土地所有權人/管理單位、田野沿革與照片，並附 Google 導航與原始政府連結。
+   - **獨立樹籍卡抽屜**：展示樹種、學名、編號、推估樹齡、胸徑/胸圍、樹高、健康狀態、土地所有權人/管理單位、田野沿革與照片，並附 **Google 360° 實景街景**、**Google 導航** 與原始政府檔案連結。
    - **附近老樹 GPS 定位**：一鍵搜尋距離使用者目前位置最近的列管樹木與直線距離。
    - **格式匯出**：地圖支援將當前篩選結果一鍵匯出為 **GeoJSON (GIS 圖層)** 或 **CSV (Excel 試算表)**。
 

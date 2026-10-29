@@ -65,6 +65,19 @@
       font-weight: 700 !important;
       box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
     }
+
+    /* Basemap Quick Switcher */
+    .basemap-quick-btn.active {
+      background-color: rgba(16, 185, 129, 0.25) !important;
+      color: #6ee7b7 !important;
+      border: 1px solid rgba(16, 185, 129, 0.6) !important;
+      font-weight: 700 !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+    .basemap-quick-btn:not(.active) {
+      border: 1px solid transparent;
+      background-color: transparent;
+    }
   </style>
 
   <!-- Load zero-CORS offline data bundle directly -->
@@ -347,6 +360,22 @@
     <main class="flex-1 h-full relative">
       <div id="map"></div>
 
+      <!-- FLOATING BASEMAP QUICK SWITCHER -->
+      <div class="absolute top-3 left-14 md:left-4 z-20 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl p-1 shadow-2xl flex items-center space-x-1 text-xs">
+        <button id="quick-basemap-dark" class="basemap-quick-btn active px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition font-bold" title="深色風格向量底圖">
+          <i class="fa-solid fa-moon text-indigo-400"></i>
+          <span>深色底圖</span>
+        </button>
+        <button id="quick-basemap-satellite" class="basemap-quick-btn px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition text-slate-300 hover:text-white" title="Google 衛星混合真實空拍照（含道路名稱與公園綠地）">
+          <i class="fa-solid fa-satellite text-emerald-400"></i>
+          <span>🛰️ Google 衛星空照</span>
+        </button>
+        <button id="quick-basemap-nlsc" class="basemap-quick-btn px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition text-slate-300 hover:text-white hidden sm:flex" title="內政部國土測繪中心臺灣通用電子地圖">
+          <i class="fa-solid fa-map text-sky-400"></i>
+          <span>臺灣電子地圖</span>
+        </button>
+      </div>
+
       <!-- MAP FLOATING TOOLS OVERLAY -->
       <div class="absolute bottom-6 right-6 z-20 flex flex-col space-y-2">
         <button id="btn-zoom-taiwan" class="w-10 h-10 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl flex items-center justify-center shadow-lg transition" title="重置全臺視野">
@@ -397,14 +426,18 @@
       </div>
 
       <!-- Dossier Action Footer -->
-      <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs">
-        <a id="dossier-gmaps-link" href="#" target="_blank" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-lg flex items-center space-x-1.5 transition">
+      <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs gap-1.5 flex-wrap">
+        <a id="dossier-gmaps-link" href="#" target="_blank" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-lg flex items-center space-x-1 transition">
           <i class="fa-solid fa-diamond-turn-right"></i>
-          <span>Google 導航</span>
+          <span>導航</span>
         </a>
-        <a id="dossier-source-link" href="#" target="_blank" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center space-x-1.5 transition">
+        <a id="dossier-streetview-link" href="#" target="_blank" class="px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg flex items-center space-x-1 transition" title="開啟該坐標之 Google 360 度街景視角">
+          <i class="fa-solid fa-street-view"></i>
+          <span>360° 街景</span>
+        </a>
+        <a id="dossier-source-link" href="#" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center space-x-1 transition">
           <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          <span>查閱官方原始樹籍</span>
+          <span>原始樹籍</span>
         </a>
       </div>
     </div>
@@ -810,34 +843,79 @@
           attribution: '',
           maxZoom: 19
         })
-      ]).addTo(map);
+      ]);
 
-      // Basemap 2: Taiwan NLSC EMAP (國土測繪臺灣通用電子地圖)
+      // Basemap 2: Google 衛星混合空拍照 (真實衛星空拍 + 繁中地名路名，免 API Key 實時空照)
+      const googleHybrid = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        subdomains: ['0', '1', '2', '3'],
+        attribution: '&copy; Google Maps Satellite',
+        maxZoom: 21
+      });
+
+      // Basemap 3: Esri World Imagery (國際高解析度衛星航照)
+      const esriImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+        maxZoom: 19
+      });
+
+      // Basemap 4: Taiwan NLSC EMAP (國土測繪臺灣通用電子地圖)
       const nlscEmap = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}', {
         attribution: '&copy; 內政部國土測繪中心 (NLSC)',
         maxZoom: 19
       });
 
-      // Basemap 3: Taiwan NLSC Orthophoto (正射影像)
+      // Basemap 5: Taiwan NLSC Orthophoto (國土測繪正射影像)
       const nlscPhoto = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}', {
         attribution: '&copy; 內政部國土測繪中心 (NLSC)',
         maxZoom: 19
       });
 
-      // Basemap 4: OpenStreetMap Standard
+      // Basemap 6: OpenStreetMap Standard
       const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 19
       });
 
+      // Default to Esri Dark
+      let currentBaseLayer = esriDark;
+      currentBaseLayer.addTo(map);
+
       baseLayers = {
         "深色底圖 (Esri Dark)": esriDark,
+        "Google 衛星混合圖 (推薦)": googleHybrid,
+        "Esri 國際衛星航照": esriImagery,
         "臺灣通用電子地圖 (NLSC)": nlscEmap,
-        "衛星正射影像 (NLSC)": nlscPhoto,
+        "臺灣衛星正射影像 (NLSC)": nlscPhoto,
         "OpenStreetMap": osm
       };
 
-      L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+      const layerControl = L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+
+      // Quick Switcher Functionality
+      window.switchBasemap = function(targetLayer, activeBtnId) {
+        if (currentBaseLayer && map.hasLayer(currentBaseLayer)) {
+          map.removeLayer(currentBaseLayer);
+        }
+        currentBaseLayer = targetLayer;
+        map.addLayer(currentBaseLayer);
+
+        document.querySelectorAll('.basemap-quick-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(activeBtnId);
+        if (activeBtn) activeBtn.classList.add('active');
+      };
+
+      document.getElementById('quick-basemap-dark').addEventListener('click', () => {
+        window.switchBasemap(esriDark, 'quick-basemap-dark');
+      });
+      document.getElementById('quick-basemap-satellite').addEventListener('click', () => {
+        window.switchBasemap(googleHybrid, 'quick-basemap-satellite');
+      });
+      const nlscBtn = document.getElementById('quick-basemap-nlsc');
+      if (nlscBtn) {
+        nlscBtn.addEventListener('click', () => {
+          window.switchBasemap(nlscEmap, 'quick-basemap-nlsc');
+        });
+      }
 
       // Create Cluster Group
       clusterGroup = L.markerClusterGroup({
@@ -998,6 +1076,10 @@
 
       // Navigation & Source Link Updates
       document.getElementById('dossier-gmaps-link').href = `https://www.google.com/maps/search/?api=1&query=${coords[1]},${coords[0]}`;
+      const streetviewBtn = document.getElementById('dossier-streetview-link');
+      if (streetviewBtn) {
+        streetviewBtn.href = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coords[1]},${coords[0]}`;
+      }
       document.getElementById('dossier-source-link').href = p.ground_truth_url || '#';
 
       dossier.classList.remove('translate-x-full');
